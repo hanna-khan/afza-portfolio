@@ -96,7 +96,6 @@ input,select,textarea{font:inherit;color:var(--fg);background:var(--card);border
 #status strong{display:block;font:800 1.25rem 'Bricolage Grotesque';margin-bottom:.35rem;letter-spacing:-.02em}
 #status.ok strong{color:var(--lime)}
 #status.bad strong{color:#ff7a7a}
-#hp,.hp{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
 .links{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:2rem}
 .links a{color:var(--mut);text-underline-offset:4px}.links a:hover{color:var(--lime)}
 footer{padding:4rem clamp(1.2rem,5vw,4rem) 2rem;overflow:hidden;border-top:1px solid var(--line)}
@@ -525,8 +524,6 @@ const setStatus=(title,detail,kind)=>{
 f.onsubmit=async e=>{
  e.preventDefault();
  const d=Object.fromEntries(new FormData(f));
- /* Old honeypot name "website" gets autofilled by browsers and silently blocked real users. */
- if((d.fax_number_leave_blank||'').trim()){setStatus('Message not sent','Please clear autofilled hidden fields and try again, or email '+DESIGNER.email+' directly.','bad');return}
  const er={};
  if(!String(d.name||'').trim())er.name='Enter your name.';
  if(!/^\S+@\S+\.\S+$/.test(String(d.email||'').trim()))er.email='Enter a valid email address.';
