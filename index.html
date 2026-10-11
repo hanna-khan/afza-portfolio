@@ -518,9 +518,10 @@ const CONTACT_INBOX='codewithhanna@gmail.com';
 const f=$('#form');
 const setStatus=(title,detail,kind)=>{
   const s=$('#status');
-  s.className=(kind||'')+(kind?' show':'');
-  s.innerHTML=title?`<strong>${title}</strong>${detail?`<span>${detail}</span>`:''}`:'';
-  if(title)s.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
+  if(!title){s.className='';s.innerHTML='';return}
+  s.className=(kind?kind+' ':'')+'show';
+  s.innerHTML=`<strong>${title}</strong>${detail?`<span>${detail}</span>`:''}`;
+  s.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
 };
 f.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(f));if(d.website)return;
  const er={};if(!d.name.trim())er.name='Enter your name.';if(!/^\S+@\S+\.\S+$/.test(d.email))er.email='Enter a valid email address.';if(!d.type)er.type='Choose a project type.';if(d.msg.trim().length<10)er.msg='Describe your project in at least 10 characters.';

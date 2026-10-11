@@ -2,11 +2,11 @@
 
 Open `index.html` to preview the design and project gallery.
 
-The contact form sends inquiries to **codewithhanna@gmail.com** through FormSubmit (no API keys required). Host the site over HTTP/HTTPS (not `file://`).
+The contact form sends inquiries to **codewithhanna@gmail.com** through FormSubmit. After submit, visitors see a large on-page success banner.
 
-**Important:** FormSubmit activation is tied to the form URL. Activating from `http://127.0.0.1:5501` does **not** activate `https://afzasubhani.vercel.app`. Submit once from the live Vercel URL, open the new activation email for that domain, click Activate, then submit again. After that, messages are forwarded.
+FormSubmit always sends from `submissions@formsubmit.co` and may include their “Someone just submitted your form…” line — that is FormSubmit branding, not something we can fully remove on the free plan. If a message lands in Spam, open it → **Report not spam** / **Move to Inbox**, and optionally create a Gmail filter for `from:submissions@formsubmit.co`.
 
-Optional: `api/contact.js` still supports Resend on Vercel if you set `RESEND_API_KEY` and `CONTACT_FROM_EMAIL`; it also delivers to `codewithhanna@gmail.com`.
+For branded From-address delivery (better inbox placement), configure Resend on Vercel: `RESEND_API_KEY` + verified `CONTACT_FROM_EMAIL`, then wire the form to `/api/contact`.
 
 The PDF resume is included. Resume contents are based on supplied descriptions, not independently verified employment history. The brand guidelines PDF contains sample/template wording; do not treat it as a confirmed commercial case study. The project gallery includes all 16 Behance files, 6 other design images, 7 Instagram screenshots, and the PDF. Original file names are preserved in asset paths. No video files were present in the ZIP.
 
