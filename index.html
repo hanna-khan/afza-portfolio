@@ -259,7 +259,7 @@ nav ul a:hover{color:var(--fg);transform:translateY(-1px)}nav ul a:hover::after{
 <section id="work">
   <h2 class="rv">Selected work. Unlimited imagination.</h2>
   
-  <p style="margin-top:1.3rem">Browse original Behance artwork, digital design samples, brand guidelines and Instagram performance screenshots from the supplied archive. Individual screenshots show their own metrics and reporting periods.</p><div class="case-study rv" aria-label="Recipe Instagram account management case study"><div><span class="case-eyebrow">SOCIAL MEDIA MANAGEMENT · CLIENT CASE STUDY</span><h3>Growing a recipe-sharing Instagram presence</h3><p>As a Senior Social Media Manager and visual content creator, I managed a client's recipe-focused Instagram page—from content planning and creative direction to designing posts, producing and publishing recipe Reels, creating Stories, writing captions, and coordinating the publishing calendar.</p><p>These selected Instagram Insights screenshots showcase the reach and visibility of recipe content published on the account. They demonstrate content performance; a before-and-after growth rate is not claimed without comparable baseline data.</p><a class="btn" href="#filters" onclick="document.querySelector('[data-cat=&quot;Social Media Insights&quot;]')?.click()">Explore client results ↓</a></div><div class="case-metrics"><div><strong>3,094,827</strong><span>Views on a featured recipe Reel</span></div><div><strong>1,859,834</strong><span>Accounts reached by that Reel</span></div><div><strong>1.3M</strong><span>Account views in a 30-day insights period</span></div><small>Metrics are individual screenshots from different reporting views and periods; they are not additive.</small></div></div>
+  <p style="margin-top:1.3rem">Browse original Behance artwork, digital design samples, brand guidelines and Instagram performance screenshots from the supplied archive. Individual screenshots show their own metrics and reporting periods.</p><div class="case-study rv" aria-label="Recipe Instagram account management case study"><div><span class="case-eyebrow">SOCIAL MEDIA MANAGEMENT · CLIENT CASE STUDY</span><h3>Growing a recipe-sharing Instagram presence</h3><p>As a Senior Social Media Manager and visual content creator, I managed a client's recipe-focused Instagram page—from content planning and creative direction to designing posts, producing and publishing recipe Reels, creating Stories, writing captions, and coordinating the publishing calendar.</p><p>These selected Instagram Insights screenshots showcase the reach and visibility of recipe content published on the account. They demonstrate content performance; a before-and-after growth rate is not claimed without comparable baseline data.</p><a class="btn" href="#filters" onclick="filterProjects('Social Media Insights')">Explore client results ↓</a></div><div class="case-metrics"><div><strong>3,094,827</strong><span>Views on a featured recipe Reel</span></div><div><strong>1,859,834</strong><span>Accounts reached by that Reel</span></div><div><strong>1.3M</strong><span>Account views in a 30-day insights period</span></div><small>Metrics are individual screenshots from different reporting views and periods; they are not additive.</small></div></div>
 <div class="filters" id="filters" role="group" aria-label="Filter projects"></div>
   <p id="filter-status" role="status" style="margin:-.8rem 0 1.2rem;font-size:.9rem"></p><div class="grid" id="grid"></div>
   <p style="margin-top:2rem"><a class="btn fill" href="https://www.behance.net/afzasubhani10" target="_blank" rel="noopener">Explore more on Behance</a></p>
@@ -442,14 +442,19 @@ $('#grid').onclick=e=>{const b=e.target.closest('.proj');if(!b)return;const p=PR
 $('#close').onclick=()=>dlg.close();
 dlg.onclick=e=>{if(e.target===dlg)dlg.close()};
 
-/* Email delivery via secure serverless endpoint. Configure the recipient and RESEND_API_KEY in the deployment environment. */
+/* Contact form → emails land in codewithhanna@gmail.com via FormSubmit (works on any static host). */
+const CONTACT_INBOX='codewithhanna@gmail.com';
 const f=$('#form');
 f.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(f));if(d.website)return;
  const er={};if(!d.name.trim())er.name='Enter your name.';if(!/^\S+@\S+\.\S+$/.test(d.email))er.email='Enter a valid email address.';if(!d.type)er.type='Choose a project type.';if(d.msg.trim().length<10)er.msg='Describe your project in at least 10 characters.';
  document.querySelectorAll('.err').forEach(n=>n.textContent=er[n.dataset.e]||'');if(Object.keys(er).length)return;
  const button=f.querySelector('button[type=submit]');button.disabled=true;button.textContent='Sending…';$('#status').textContent='';
- try{const response=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Email service is not configured or delivery failed.');$('#status').textContent='Thank you! Your message was sent successfully.';f.reset()}
- catch(error){$('#status').textContent=error.message+' Please email '+DESIGNER.email+' directly.'}
+ try{
+  const response=await fetch('https://formsubmit.co/ajax/'+CONTACT_INBOX,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({name:d.name,email:d.email,'Project type':d.type,message:d.msg,Budget:d.budget||'Not specified',Timeline:d.time||'Not specified',_subject:`Portfolio inquiry: ${d.type} — ${d.name}`,_replyto:d.email,_template:'table',_captcha:'false'})});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok||result.success===false||result.success==='false')throw new Error(result.message||'Email delivery failed.');
+  $('#status').textContent='Thank you! Your message was sent successfully.';f.reset();
+ }catch(error){$('#status').textContent=(error.message||'Something went wrong.')+' Please email '+DESIGNER.email+' directly.'}
  finally{button.disabled=false;button.textContent='Send message'}
 };
 
