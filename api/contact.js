@@ -1,7 +1,7 @@
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({error:'Method not allowed'});
-  const {name,email,type,msg,budget,time,website} = req.body || {};
-  if (website) return res.status(200).json({ok:true});
+  const {name,email,type,msg,budget,time,fax_number_leave_blank,website} = req.body || {};
+  if (fax_number_leave_blank || website) return res.status(200).json({ok:true});
   if (![name,email,type,msg].every(v => typeof v === 'string') || !/^\S+@\S+\.\S+$/.test(email) || msg.trim().length < 10 || JSON.stringify(req.body).length > 15000) return res.status(400).json({error:'Please check the required fields.'});
   if (!process.env.RESEND_API_KEY || !process.env.CONTACT_FROM_EMAIL) return res.status(503).json({error:'Email delivery is not configured yet.'});
   const esc = s => String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
