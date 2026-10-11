@@ -96,7 +96,7 @@ input,select,textarea{font:inherit;color:var(--fg);background:var(--card);border
 #status strong{display:block;font:800 1.25rem 'Bricolage Grotesque';margin-bottom:.35rem;letter-spacing:-.02em}
 #status.ok strong{color:var(--lime)}
 #status.bad strong{color:#ff7a7a}
-#hp{position:absolute;left:-9999px}
+#hp,.hp{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
 .links{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:2rem}
 .links a{color:var(--mut);text-underline-offset:4px}.links a:hover{color:var(--lime)}
 footer{padding:4rem clamp(1.2rem,5vw,4rem) 2rem;overflow:hidden;border-top:1px solid var(--line)}
@@ -355,7 +355,7 @@ nav ul a:hover{color:var(--fg);transform:translateY(-1px)}nav ul a:hover::after{
     <label>Project description<textarea name="msg" rows="5" required></textarea><span class="err" data-e="msg"></span></label>
     <label>Budget range (optional)<input name="budget"></label>
     <label>Timeline (optional)<input name="time"></label>
-    <input id="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <input id="hp" name="fax_number_leave_blank" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
     <div id="status" role="status" aria-live="assertive"></div>
     <button class="btn fill" type="submit">Send message</button>
   </form>
@@ -523,13 +523,23 @@ const setStatus=(title,detail,kind)=>{
   s.innerHTML=`<strong>${title}</strong>${detail?`<span>${detail}</span>`:''}`;
   s.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
 };
-f.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(f));if(d.website)return;
- const er={};if(!d.name.trim())er.name='Enter your name.';if(!/^\S+@\S+\.\S+$/.test(d.email))er.email='Enter a valid email address.';if(!d.type)er.type='Choose a project type.';if(d.msg.trim().length<10)er.msg='Describe your project in at least 10 characters.';
- document.querySelectorAll('.err').forEach(n=>n.textContent=er[n.dataset.e]||'');if(Object.keys(er).length)return;
- const button=f.querySelector('button[type=submit]');const name=d.name.trim(),email=d.email.trim(),type=d.type,msg=d.msg.trim(),budget=d.budget.trim()||'Not specified',timeline=d.time.trim()||'Not specified';
+f.onsubmit=async e=>{
+ e.preventDefault();
+ const d=Object.fromEntries(new FormData(f));
+ /* Old honeypot name "website" gets autofilled by browsers and silently blocked real users. */
+ if((d.fax_number_leave_blank||'').trim()){setStatus('Message not sent','Please clear autofilled hidden fields and try again, or email '+DESIGNER.email+' directly.','bad');return}
+ const er={};
+ if(!String(d.name||'').trim())er.name='Enter your name.';
+ if(!/^\S+@\S+\.\S+$/.test(String(d.email||'').trim()))er.email='Enter a valid email address.';
+ if(!d.type)er.type='Choose a project type.';
+ if(String(d.msg||'').trim().length<10)er.msg='Describe your project in at least 10 characters.';
+ document.querySelectorAll('.err').forEach(n=>n.textContent=er[n.dataset.e]||'');
+ if(Object.keys(er).length){setStatus('Please fix the form',Object.values(er)[0],'bad');return}
+ const button=f.querySelector('button[type=submit]');
+ const name=String(d.name).trim(),email=String(d.email).trim(),type=d.type,msg=String(d.msg).trim();
+ const budget=String(d.budget||'').trim()||'Not specified',timeline=String(d.time||'').trim()||'Not specified';
  button.disabled=true;button.textContent='Sending…';setStatus('Sending your message…','Please wait a moment.','');
  try{
-  /* One clear inquiry body so the inbox email reads like a real client message, not loose field scraps. */
   const inquiry=[
     `New project inquiry for Afza Subhani`,
     ``,
