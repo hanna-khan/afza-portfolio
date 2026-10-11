@@ -511,8 +511,8 @@ $('#grid-social').onclick=openProject;
 $('#close').onclick=()=>dlg.close();
 dlg.onclick=e=>{if(e.target===dlg)dlg.close()};
 
-/* Contact form → FormSubmit delivers a full inquiry email to codewithhanna@gmail.com. */
-const CONTACT_INBOX='codewithhanna@gmail.com';
+/* Contact form → FormSubmit delivers a full inquiry email to Afza's inbox. */
+const CONTACT_INBOX=DESIGNER.email;
 const f=$('#form');
 const setStatus=(title,detail,kind)=>{
   const s=$('#status');
