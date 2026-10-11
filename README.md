@@ -2,7 +2,9 @@
 
 Open `index.html` to preview the design and project gallery.
 
-The contact form sends inquiries to **codewithhanna@gmail.com** through FormSubmit (no API keys required). Host the site over HTTP/HTTPS (not `file://`). On the first submission, FormSubmit emails that inbox an activation link — confirm it once, then every later form message arrives there.
+The contact form sends inquiries to **codewithhanna@gmail.com** through FormSubmit (no API keys required). Host the site over HTTP/HTTPS (not `file://`).
+
+**Important:** FormSubmit activation is tied to the form URL. Activating from `http://127.0.0.1:5501` does **not** activate `https://afzasubhani.vercel.app`. Submit once from the live Vercel URL, open the new activation email for that domain, click Activate, then submit again. After that, messages are forwarded.
 
 Optional: `api/contact.js` still supports Resend on Vercel if you set `RESEND_API_KEY` and `CONTACT_FROM_EMAIL`; it also delivers to `codewithhanna@gmail.com`.
 
