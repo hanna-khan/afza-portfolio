@@ -1,0 +1,12 @@
+module.exports = async (req, res) => {
+  if (req.method !== 'POST') return res.status(405).json({error:'Method not allowed'});
+  const {name,email,type,msg,budget,time,website} = req.body || {};
+  if (website) return res.status(200).json({ok:true});
+  if (![name,email,type,msg].every(v => typeof v === 'string') || !/^\S+@\S+\.\S+$/.test(email) || msg.trim().length < 10 || JSON.stringify(req.body).length > 15000) return res.status(400).json({error:'Please check the required fields.'});
+  if (!process.env.RESEND_API_KEY || !process.env.CONTACT_FROM_EMAIL) return res.status(503).json({error:'Email delivery is not configured yet.'});
+  const esc = s => String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const row=(k,v)=>`<tr><td style="padding:12px 16px;color:#817a98;width:130px;vertical-align:top">${k}</td><td style="padding:12px 16px;color:#211d30;word-break:break-word">${esc(v||'Not specified')}</td></tr>`;
+  const body=`<div style="background:#f5f2fc;padding:32px 12px;font-family:Arial,sans-serif"><div style="max-width:620px;margin:auto;background:white;border-radius:18px;overflow:hidden"><div style="background:#211934;color:white;padding:28px 32px"><div style="font-size:13px;letter-spacing:2px;color:#c7b8ff">AFZA SUBHANI · PORTFOLIO</div><h1 style="margin:12px 0 0;font-size:25px">New project inquiry</h1></div><div style="padding:20px 16px"><p style="padding:0 16px;color:#615a72">A visitor has submitted the contact form.</p><table style="border-collapse:collapse;width:100%;font-size:14px">${row('Name',name)}${row('Email',email)}${row('Project type',type)}${row('Budget',budget)}${row('Timeline',time)}${row('Message',msg)}</table></div><div style="background:#f8f6fc;padding:20px 32px;color:#827b91;font-size:12px">Reply directly to this email to contact the visitor.</div></div></div>`;
+  try { const response = await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${process.env.RESEND_API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify({from:process.env.CONTACT_FROM_EMAIL,to:[process.env.CONTACT_TO_EMAIL || "codewithhanna@gmail.com"],reply_to:email,subject:`Portfolio inquiry: ${String(type).slice(0,70)} — ${String(name).slice(0,70)}`,html:body})});if(!response.ok) return res.status(502).json({error:'Email provider rejected the message.'});return res.status(200).json({ok:true});}
+  catch(e){return res.status(502).json({error:'Email delivery is temporarily unavailable.'});}
+};
